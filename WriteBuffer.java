@@ -1,6 +1,6 @@
 package java.util.concurrent;
 import java.util.*;
-public class WriteBuffer<T extends Object> {
+public class WriteBuffer {
 	public boolean pso;
 	public Object[] buffer;
 	public boolean[] inQueue;
@@ -13,7 +13,7 @@ public class WriteBuffer<T extends Object> {
 		this.inQueue = new boolean[n];
 	}
 	
-	public Object load(int x){ //throws not found in buffer exception
+	public Object load(int x) throws NotInBufferException {
 		try{
 			Object tmp = buffer[x];
 			return tmp;
