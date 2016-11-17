@@ -1,36 +1,52 @@
 package java.util.concurrent;
 import java.util.*;
-public class WriteBuffer {
+public class WriteBuffer{
 	public boolean pso;
-	public Object[] buffer;
-	public boolean[] inQueue;
-	public Deque<Object> storeQueue;
+	public ConcurrentLinkedDeque<Pair> storeQueue;
 	
 	
-	public WriteBuffer(boolean t, int n){
+	public WriteBuffer(boolean t){
 		this.pso = t;
-		this.buffer= new Object[n];
-		this.inQueue = new boolean[n];
 	}
+
 	
-	public Object load(int x) throws NotInBufferException {
-		try{
-			Object tmp = buffer[x];
-			return tmp;
+	public synchronized int load(String x)throws NotInBufferException{ //throws not found in buffer exception
+		// check if variable x is in the queue
+		boolean found = false; // assume it is not in the queue
+		Iterator<Pair> q = storeQueue.descendingIterator();  // descending iterator so that we get the most recent store
+		while(q.hasNext()){
+			Pair n = q.next();
+			if(x.equals(n.getVar())){
+				found = true;
+				return n.getVal();
+			}
 		}
-		catch (IndexOutOfBoundsException e){
-			System.err.println("Error item not in buffer" + e.getMessage());
-			return -1;
+		if(found == false){
+			throw new NotInBufferException();
 		}
+		return 0;
+	}
 		
-	}
 	
-	public void store(int x, Object v){
+	public synchronized void store(String x, int v){
+		Pair pair = new Pair(x,v);
 		if(this.pso == true){
-			
+			// first check if variable x is already in the queue
+			boolean found = false; // assume it is not in the queue
+			Iterator<Pair> q = storeQueue.iterator();
+			while(q.hasNext()){
+				if(pair.equals(q.next())){
+					storeQueue.addLast(pair);
+					found = true;
+					break;
+				}
+			}
+			if(found == false){
+				storeQueue.addFirst(pair);
+			}
 		}
-		else{
-			
+		else{ // TSO
+			storeQueue.addLast(pair);
 		}
 	}
 
