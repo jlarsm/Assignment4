@@ -1,4 +1,4 @@
-package java.util.concurrent;
+
 import java.util.concurrent.*;
 public class Processor extends Thread {
 
@@ -15,10 +15,15 @@ public class Processor extends Thread {
 		this.agent = agent;
 		this.buffersOn = true;
 		this.i = pid;
+		//default value
+		for(int x = 0; x < 10; x++){
+			raceCondition[x] = -1;
+		}
 	}
 	public void run(){
 		agent.start();
 
+		/*
 		// peterson's algorithm data (for n=10):
 		for(int z = 0; z <= 10; z++){
 			buffer.store("flag"+Integer.toString(z), -1);
@@ -54,13 +59,16 @@ public class Processor extends Thread {
 			}
 		}
 		//Critical Section
+		 
+		 
 		for(int x=0; x<10;x++){
 			raceCondition[x] = i;  // fill raceCondition array with pid
 		}
 		
+		
 		//<<Exit Section>>
 		buffer.store("flag"+Integer.toString(i), -1);
-		
+		*/
 	}
 	
 }

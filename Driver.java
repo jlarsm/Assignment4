@@ -1,4 +1,4 @@
-package java.util.concurrent;
+
 import java.util.concurrent.*;
 
 public class Driver {
@@ -17,8 +17,10 @@ public class Driver {
 			 agentArray[x] = new MemoryAgent(ram, bufferArray[x]);
 			 processorArray[x] = new Processor(ram, bufferArray[x], agentArray[x], x);
 		}
-		for(Processor p : processorArray){
-			p.start();
+		
+		for(int y = 0; y < 10; y++){
+			System.out.println(y);
+			processorArray[y].start();
 		}
 		System.out.println(Processor.raceCondition);
 		

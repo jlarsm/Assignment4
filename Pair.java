@@ -1,4 +1,4 @@
-package java.util.concurrent;
+
 
 public class Pair {
 	private String var;

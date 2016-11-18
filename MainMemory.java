@@ -1,4 +1,4 @@
-package java.util.concurrent;
+
 import java.util.concurrent.*;
 public class MainMemory {
 	public ConcurrentHashMap<String,Integer> memory;
