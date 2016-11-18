@@ -1,5 +1,6 @@
 package java.util.concurrent;
 import java.util.*;
+import java.util.concurrent.*;
 public class WriteBuffer{
 	public boolean pso;
 	public ConcurrentLinkedDeque<Pair> storeQueue;
@@ -8,8 +9,18 @@ public class WriteBuffer{
 	public WriteBuffer(boolean t){
 		this.pso = t;
 	}
-
 	
+	public void set_pso(boolean b)
+	{
+		this.pso = true;
+	}
+	
+	public void set_tso(boolean b)
+	{
+		this.pso = false;
+	}
+
+
 	public synchronized int load(String x)throws NotInBufferException{ //throws not found in buffer exception
 		// check if variable x is in the queue
 		boolean found = false; // assume it is not in the queue

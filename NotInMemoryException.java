@@ -1,5 +1,6 @@
 
 package java.util.concurrent;
+import java.util.concurrent.*;
 	/**
 	 * This is an exception thrown when one tries to load a variable not in ram
 	 */
@@ -10,7 +11,7 @@ public class NotInMemoryException extends Exception{
 	 */
 	public NotInMemoryException()
 	{
-		super("Not in buffer.");
+		super("Not in memory.");
 	}
 	
 	/**
