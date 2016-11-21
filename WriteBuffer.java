@@ -1,9 +1,8 @@
-
 import java.util.*;
 import java.util.concurrent.*;
 public class WriteBuffer{
 	public boolean pso;
-	public ConcurrentLinkedDeque<Pair> storeQueue;
+	public ConcurrentLinkedDeque<Pair> storeQueue = new ConcurrentLinkedDeque();
 	
 	
 	public WriteBuffer(boolean t){
