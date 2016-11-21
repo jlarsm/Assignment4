@@ -1,7 +1,7 @@
 
 import java.util.concurrent.*;
 public class MainMemory {
-	public ConcurrentHashMap<String,Integer> memory;
+	public ConcurrentHashMap<String,Integer> memory = new ConcurrentHashMap();
 	
 	public MainMemory(){
 		
