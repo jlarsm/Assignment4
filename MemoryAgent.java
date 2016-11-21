@@ -1,4 +1,3 @@
-
 import java.util.concurrent.*;
 public class MemoryAgent extends Thread {
 
@@ -12,15 +11,15 @@ public class MemoryAgent extends Thread {
 	public void run(){
 		
 		int size;
-		//size = buffer.size();
-		/*
+		size = buffer.storeQueue.size();
+		
 		while(!buffer.storeQueue.isEmpty()){
-			Pair p = buffer.storeQueue.remove();
+			Pair p = buffer.storeQueue.remove(); //try poll if there's issues
 			String variable = p.getVar();
 			int value = p.getVal();
 			ram.store(variable, value);
 		}
-		*/
+		
 		
 	}
 	
