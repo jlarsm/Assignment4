@@ -1,4 +1,4 @@
-
+import java.util.Arrays;
 import java.util.concurrent.*;
 
 public class Driver {
@@ -22,23 +22,17 @@ public class Driver {
 			System.out.println(y);
 			processorArray[y].start();
 		}
-		
-		printArray(Processor.raceCondition);
+		try {
+			Thread.currentThread().sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("driver");
+		System.out.println(Arrays.toString(Processor.raceCondition));
 
 		
 	}
 	
-	public static void printArray(int[] a)
-	{
-		System.out.println();
-		for (int i = 0; i <a.length; i++)
-		{
-			System.out.print(a[i]+", ");
-			
-		}
-		System.out.println();
-
-		
-	}
 	
 }
