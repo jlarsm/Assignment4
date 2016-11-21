@@ -22,6 +22,7 @@ public class WriteBuffer{
 
 
 	public synchronized int load(String x)throws NotInBufferException{ //throws not found in buffer exception
+
 		// check if variable x is in the queue
 		boolean found = false; // assume it is not in the queue
 		Iterator<Pair> q = storeQueue.descendingIterator();  // descending iterator so that we get the most recent store
@@ -37,7 +38,11 @@ public class WriteBuffer{
 		}
 		return 0;
 	}
-		
+	
+	public int size()
+	{
+		return storeQueue.size();
+	}
 	
 	public synchronized void store(String x, int v){
 		Pair pair = new Pair(x,v);

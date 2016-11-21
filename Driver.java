@@ -22,8 +22,22 @@ public class Driver {
 			System.out.println(y);
 			processorArray[y].start();
 		}
-		System.out.println(Processor.raceCondition);
 		
+		printArray(Processor.raceCondition);
+
+		
+	}
+	
+	public static void printArray(int[] a)
+	{
+		System.out.println();
+		for (int i = 0; i <a.length; i++)
+		{
+			System.out.print(a[i]+", ");
+			
+		}
+		System.out.println();
+
 		
 	}
 	

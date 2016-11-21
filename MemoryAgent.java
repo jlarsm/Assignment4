@@ -10,12 +10,18 @@ public class MemoryAgent extends Thread {
 		this.buffer = buffer;
 	}
 	public void run(){
+		
+		int size;
+		//size = buffer.size();
+		/*
 		while(!buffer.storeQueue.isEmpty()){
 			Pair p = buffer.storeQueue.remove();
 			String variable = p.getVar();
 			int value = p.getVal();
 			ram.store(variable, value);
 		}
+		*/
+		
 	}
 	
 }
