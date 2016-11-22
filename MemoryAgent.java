@@ -13,11 +13,15 @@ public class MemoryAgent extends Thread {
 		int size;
 		size = buffer.storeQueue.size();
 		
-		while(!buffer.storeQueue.isEmpty()){
-			Pair p = buffer.storeQueue.remove(); //try poll if there's issues
-			String variable = p.getVar();
-			int value = p.getVal();
-			ram.store(variable, value);
+		while(true)
+		{
+			if (!buffer.storeQueue.isEmpty())
+			{
+				Pair p = buffer.storeQueue.remove(); //try poll if there's issues
+				String variable = p.getVar();
+				int value = p.getVal();
+				ram.store(variable, value);
+			}
 		}
 		
 		
