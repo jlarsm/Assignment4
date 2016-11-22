@@ -16,14 +16,33 @@ public class Driver {
 			 bufferArray[x] = new WriteBuffer(false); // tso mode
 			 agentArray[x] = new MemoryAgent(ram, bufferArray[x]);
 			 processorArray[x] = new Processor(ram, bufferArray[x], agentArray[x], x);
+			 //processorArray[x].bufferSwitch(true);
 		}
 		
 		for(int y = 0; y < 10; y++){
-			System.out.println(y);
 			processorArray[y].start();
 		}
+		/*
+		try{
+			processorArray[0].join();
+			processorArray[1].join();
+			processorArray[2].join();
+			processorArray[3].join();
+			processorArray[4].join();
+			processorArray[5].join();
+			processorArray[6].join();
+			processorArray[7].join();
+			processorArray[8].join();
+			processorArray[9].join();
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+		*/
+		
+		
 		try {
-			Thread.currentThread().sleep(5000);
+			Thread.currentThread().sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,5 +1,3 @@
-
-
 public class Pair {
 	private String var;
 	private int val;
