@@ -13,36 +13,19 @@ public class Driver {
 		
 		//make 10 processors
 		for(int x = 0; x < 10; x++){
-			 bufferArray[x] = new WriteBuffer(false); // tso mode
+			 bufferArray[x] = new WriteBuffer(true); // is argument is false, tso. if true, pso.
 			 agentArray[x] = new MemoryAgent(ram, bufferArray[x]);
-			 processorArray[x] = new Processor(ram, bufferArray[x], agentArray[x], x);
-			 //processorArray[x].bufferSwitch(true);
+			 processorArray[x] = new Processor(ram, bufferArray[x], agentArray[x], x,     true,     true);
+			 //                                                                   pid, buffersOn, swapAtomicOn
 		}
 		
 		for(int y = 0; y < 10; y++){
 			processorArray[y].start();
 		}
-		/*
-		try{
-			processorArray[0].join();
-			processorArray[1].join();
-			processorArray[2].join();
-			processorArray[3].join();
-			processorArray[4].join();
-			processorArray[5].join();
-			processorArray[6].join();
-			processorArray[7].join();
-			processorArray[8].join();
-			processorArray[9].join();
-		}
-		catch (Exception ex){
-			ex.printStackTrace();
-		}
-		*/
-		
-		
+
+			
 		try {
-			Thread.currentThread().sleep(10000);
+			Thread.currentThread().sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

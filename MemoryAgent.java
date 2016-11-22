@@ -8,7 +8,6 @@ public class MemoryAgent extends Thread {
 	public MemoryAgent(MainMemory ram, WriteBuffer buffer){
 		this.ram = ram;
 		this.buffer = buffer;
-		this.exitNow = false;
 	}
 	public void run(){
 		
@@ -29,9 +28,7 @@ public class MemoryAgent extends Thread {
 				Semaphores.memoryAgent.release();
 				Semaphores.mutex.release();
 				
-				if (exitNow == true){
-					break;
-				}
+				
 			}			
 		}
 		

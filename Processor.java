@@ -8,21 +8,21 @@ public class Processor extends Thread {
 	private boolean buffersOn; // true if buffers are turned on
 	public int i; // i is pid
 	public static int[] raceCondition = new int[10];
+	public boolean swapAtomicOn;
 
-	public Processor(MainMemory ram, WriteBuffer buffer, MemoryAgent agent, int pid){
+	public Processor(MainMemory ram, WriteBuffer buffer, MemoryAgent agent, int pid, boolean buffersOn, boolean swapAtomicOn){
 		this.ram = ram;
 		this.buffer = buffer;
 		this.agent = agent;
-		this.buffersOn = true;
+		this.buffersOn = buffersOn;
 		this.i = pid;
+		this.swapAtomicOn = swapAtomicOn;
 		//default value
 		for(int x = 0; x < 10; x++){
 			raceCondition[x] = -1;
 		}
 	}
-	public void bufferSwitch(boolean t){
-		this.buffersOn = t;
-	}
+	
 	public void run(){
 		agent.start();
 
@@ -39,172 +39,165 @@ public class Processor extends Thread {
 			}
 		}
 		
-
-// THE FOLLOWING COMMENTED OUT BLOCK OF CODE IS OUR PETERSONS ALGORITHM IMPLEMENTED WITH LOAD AND STORE,
-// NOT USING SWAPATOMIC. IT ALLOWS MULTIPLE PROCESSES TO ENTER THE CRITICAL SECTION AT ONCE
-		/*// <Entry Section>>
-		
-		for (int k = 0; k <= 8; k++)  // k is stored in a register in the processor
-		{
-			if(buffersOn){
-				buffer.store("flag"+Integer.toString(i), k);
-				buffer.store("turn"+Integer.toString(k), i);
-			}
-			else{
-				ram.store("flag"+Integer.toString(i), k);
-				ram.store("turn"+Integer.toString(k), i);
-			}
-			for (int j = 0; j < 10; j++)// j is stored in a processor register
+		if(swapAtomicOn == false){
+			// <Entry Section>>
+			for (int k = 0; k <= 8; k++)  // k is stored in a register in the processor
 			{
-				if (i == j) continue;
-				int flag_j=-1;
-				int turn_k=0;
-				try{
-					if(buffersOn){
-						flag_j = buffer.load("flag"+Integer.toString(j));
-						}
-					else{
-						flag_j = ram.load("flag"+Integer.toString(j));
-						}
+				if(buffersOn){
+					buffer.store("flag"+Integer.toString(i), k);
+					buffer.store("turn"+Integer.toString(k), i);
 				}
-				catch(NotInBufferException e){
-					try{flag_j = ram.load("flag"+Integer.toString(j));}
-					catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+				else{
+					ram.store("flag"+Integer.toString(i), k);
+					ram.store("turn"+Integer.toString(k), i);
 				}
-				catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
-				try{
-					if(buffersOn){
-						turn_k = buffer.load("turn"+Integer.toString(k));
+				for (int j = 0; j < 10; j++)// j is stored in a processor register
+				{
+					if (i == j) continue;
+					int flag_j=-1;
+					int turn_k=0;
+					try{
+						if(buffersOn){
+							flag_j = buffer.load("flag"+Integer.toString(j));
+							}
+						else{
+							flag_j = ram.load("flag"+Integer.toString(j));
+							}
 					}
-					else{
-						turn_k = ram.load("turn"+Integer.toString(k));
+					catch(NotInBufferException e){
+						try{flag_j = ram.load("flag"+Integer.toString(j));}
+						catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
 					}
-				}
-				catch(NotInBufferException e){
-					try{turn_k = ram.load("turn"+Integer.toString(k));}
 					catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+					try{
+						if(buffersOn){
+							turn_k = buffer.load("turn"+Integer.toString(k));
+						}
+						else{
+							turn_k = ram.load("turn"+Integer.toString(k));
+						}
+					}
+					catch(NotInBufferException e){
+						try{turn_k = ram.load("turn"+Integer.toString(k));}
+						catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+					}
+					catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+					while (flag_j >= k && turn_k == i) ; //nop
 				}
-				catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
-				while (flag_j >= k && turn_k == i) ; //nop
 			}
-		}
-		//Critical Section
-		 
-		
-		for(int x=0; x<10;x++){
-			raceCondition[x] = i;  // fill raceCondition array with pid
+			//Critical Section
+			 
 			
-			
-			// threads that start first (lower ID) have to wait longer
-			// (to increase probability of different values in raceCondition array
-			
-			
-			try {
-				Thread.currentThread().sleep(1000/(i+3));
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		}
-		
-		
-		
-		//<<Exit Section>>
-		if(buffersOn){
-			buffer.store("flag"+Integer.toString(i), -1);
-		}
-		else{
-			ram.store("flag"+Integer.toString(i), -1);
-		}
-		*/
-		
-		
-		// <Entry Section>>
-		
-		for (int k = 0; k <= 8; k++)  // k is stored in a register in the processor
-		{
-			if(buffersOn){
-				System.out.println("right before");
-				buffer.swapAtomic("flag"+Integer.toString(i), k);
-				System.out.println("hi"+i);
-				buffer.swapAtomic("turn"+Integer.toString(k), i);
-			}
-			else{
-				ram.store("flag"+Integer.toString(i), k);
-				ram.store("turn"+Integer.toString(k), i);
-			}
-			for (int j = 0; j < 10; j++)// j is stored in a processor register
-			{
+			for(int x=0; x<10;x++){
+				raceCondition[x] = i;  // fill raceCondition array with pid
 				
-				if (i == j) continue;
-				int flag_j=-1;
-				int turn_k=0;
-				try{
-					if(buffersOn){
-						System.out.println("here");
-						flag_j = buffer.load("flag"+Integer.toString(j));
-						System.out.println("there");
-						}
-					else{
-						flag_j = ram.load("flag"+Integer.toString(j));
-						}
+				
+				// threads that start first (lower ID) have to wait longer
+				// (to increase probability of different values in raceCondition array
+				
+				/*
+				try {
+					Thread.currentThread().sleep(1000/(i+3));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				catch(NotInBufferException e){
-					try{flag_j = ram.load("flag"+Integer.toString(j));}
-					catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
-				}
-				catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
-				try{
-					if(buffersOn){
-						turn_k = buffer.load("turn"+Integer.toString(k));
-					}
-					else{
-						turn_k = ram.load("turn"+Integer.toString(k));
-					}
-				}
-				catch(NotInBufferException e){
-					try{turn_k = ram.load("turn"+Integer.toString(k));}
-					catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
-				}
-				catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
-				while (flag_j >= k && turn_k == i) ; //nop
-			}
-		}
-		//Critical Section
-		System.out.println(i);
-
-		
-		for(int x=0; x<10;x++){
-			raceCondition[x] = i;  // fill raceCondition array with pid
-			
-			
-			// threads that start first (lower ID) have to wait longer
-			// (to increase probability of different values in raceCondition array
-			
-			
-			try {
-				Thread.currentThread().sleep(1000/(i+3));
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				*/
+				
 			}
 			
 			
+			
+			//<<Exit Section>>
+			if(buffersOn){
+				buffer.store("flag"+Integer.toString(i), -1);
+			}
+			else{
+				ram.store("flag"+Integer.toString(i), -1);
+			}
 		}
 		
 		
-		
-		//<<Exit Section>>
-		if(buffersOn){
-			buffer.swapAtomic("flag"+Integer.toString(i), -1);
-		}
 		else{
-			ram.store("flag"+Integer.toString(i), -1);
+			// <Entry Section>>
+			
+			for (int k = 0; k <= 8; k++)  // k is stored in a register in the processor
+			{
+				if(buffersOn){
+					buffer.swapAtomic("flag"+Integer.toString(i), k);
+					buffer.swapAtomic("turn"+Integer.toString(k), i);
+				}
+				else{
+					ram.store("flag"+Integer.toString(i), k);
+					ram.store("turn"+Integer.toString(k), i);
+				}
+				for (int j = 0; j < 10; j++)// j is stored in a processor register
+				{
+					
+					if (i == j) continue;
+					int flag_j=-1;
+					int turn_k=0;
+					try{
+						if(buffersOn){
+							flag_j = buffer.load("flag"+Integer.toString(j));
+							}
+						else{
+							flag_j = ram.load("flag"+Integer.toString(j));
+							}
+					}
+					catch(NotInBufferException e){
+						try{flag_j = ram.load("flag"+Integer.toString(j));}
+						catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+					}
+					catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+					try{
+						if(buffersOn){
+							turn_k = buffer.load("turn"+Integer.toString(k));
+						}
+						else{
+							turn_k = ram.load("turn"+Integer.toString(k));
+						}
+					}
+					catch(NotInBufferException e){
+						try{turn_k = ram.load("turn"+Integer.toString(k));}
+						catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+					}
+					catch(NotInMemoryException ex){System.out.println(ex.getMessage());}
+					while (flag_j >= k && turn_k == i) ; //nop
+				}
+			}
+			//Critical Section
+	
+	
+			
+			for(int x=0; x<10;x++){
+				raceCondition[x] = i;  // fill raceCondition array with pid
+				
+				
+				// threads that start first (lower ID) have to wait longer
+				// (to increase probability of different values in raceCondition array
+				
+				/*
+				try {
+					Thread.currentThread().sleep(1000/(i+3));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				*/
+				
+			}
+			
+			
+			
+			//<<Exit Section>>
+			if(buffersOn){
+				buffer.swapAtomic("flag"+Integer.toString(i), -1);
+			}
+			else{
+				ram.store("flag"+Integer.toString(i), -1);
+			}
 		}
-		this.agent.exitNow=true;
-		System.out.println(i);
 	}
 	
 }

@@ -34,7 +34,7 @@ public class WriteBuffer{
 				break;
 			}
 		}
-		System.out.println("found?"+found);
+		
 		if(found == false){
 			tmp = MainMemory.memory.get(x);
 			if(tmp == null){
@@ -45,16 +45,13 @@ public class WriteBuffer{
 		if(this.pso == true){
 			if(found == false){
 				// CASE PSO AND VAR NOT IN THE QUEUE
-				System.out.println("pso and var not in queue");
 				storeQueue.addFirst(pair);
 				Pair p = storeQueue.pollFirst();
-				System.out.println("HERE");
 
 				MainMemory.memory.put(p.getVar(), p.getVal());
 			}
 			else{
 				// CASE PSO AND VAR ALREADY IN THE QUEUE
-				System.out.println("pso and var in queue already");
 
 				storeQueue.addLast(pair);
 				while (!storeQueue.isEmpty())
@@ -68,8 +65,6 @@ public class WriteBuffer{
 			}
 		}
 		else{ // CASE TSO
-			System.out.println("TSO");
-
 			storeQueue.addLast(pair);
 			while (!storeQueue.isEmpty())
 			{	
@@ -80,9 +75,6 @@ public class WriteBuffer{
 			}
 		}
 		
-		System.out.println("got to end");
-
-		
 		Semaphores.memLoad.release();
 		Semaphores.memStore.release();
 		Semaphores.memoryAgent.release();
@@ -92,9 +84,7 @@ public class WriteBuffer{
 	}
 
 	public synchronized int load(String x)throws NotInBufferException{ //throws not found in buffer exception
-		System.out.println("attempting to acquire"+x);
 		Semaphores.mutex.acquireUninterruptibly(); // use mutex to prevent the scenario where
-		System.out.println("acquired"+x);
 		// a stale value is loaded from memory because memoryAgent was moving
 		// a store from the writeBuffer to RAM
 		
@@ -106,15 +96,14 @@ public class WriteBuffer{
 			Pair n = q.next();
 			if(x.equals(n.getVar())){
 				found = true;
-				System.out.println("Released "+x);
 				Semaphores.mutex.release();
 				return n.getVal();
 			}
 		}
 		if(found == false){
+			Semaphores.mutex.release();
 			throw new NotInBufferException();
 		}
-		
 		Semaphores.mutex.release();
 		
 		return 0;
